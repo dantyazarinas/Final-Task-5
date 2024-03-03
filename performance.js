@@ -4,8 +4,11 @@ import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporte
 
 export let options = {
     vus: 1000,
-    duration: '30s',
     iterations: 3500,
+    thresholds : {
+        http_req_failed: ['rate<0.01'], // http errors should be less than 1%
+        http_req_duration: ['avg<2000'], // response API max 2s
+    }
 };
 
 export default function () {
@@ -22,7 +25,7 @@ export default function () {
     let res = http.post(url, payload, params);
     check(res, {
         'API create is successful': (r) => r.status === 201,
-        'Response time is less than 2s': (r) => r.timings.duration < 2000,
+        
     });
     sleep(1);
     
@@ -34,7 +37,7 @@ export default function () {
     res = http.put(url, payload, params);
     check(res, {
         'API update is successful': (r) => r.status === 200,
-        'Response time is less than 2s': (r) => r.timings.duration < 2000,
+        
     });
     sleep(1);
 }
@@ -43,4 +46,4 @@ export function handleSummary(data) {
     return {
       "report.html": htmlReport(data),
     };
-  }
+  };
