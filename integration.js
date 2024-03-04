@@ -1,9 +1,8 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 
-export default function () {
-    
-    group('create with valid request should success', function () {        
+export default function () {  
+    group('API Create', function () {        
     const url = 'https://reqres.in/api/users';
     const payload = JSON.stringify({
         name: 'morpheus',
@@ -33,7 +32,7 @@ export default function () {
 });
     sleep(1);
     
-    group('update with valid request should success', function () {
+    group('API Update', function () {
     const url = 'https://reqres.in/api/users/2';
     const payload = JSON.stringify({
         name: 'morpheus',
