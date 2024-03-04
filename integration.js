@@ -1,31 +1,65 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check, sleep, group } from 'k6';
 
 export default function () {
-    let url = 'https://reqres.in/api/users';
-    let payload = JSON.stringify({
+    
+    group('create with valid request should success', function () {        
+    const url = 'https://reqres.in/api/users';
+    const payload = JSON.stringify({
         name: 'morpheus',
         job: 'leader'
     });
-    let params = {
+    const params = {
         headers: {
             'Content-Type': 'application/json',
         },
     };
     let res = http.post(url, payload, params);
     check(res, {
-        'API create is successful': (r) => r.status === 201,
+        'response code was 201': (res) => res.status == 201,
     });
+    check(res, {
+        'response name should same with requests': (res) => {
+            const response = JSON.parse(res.body);
+            return response.name == 'morpheus'
+        },
+    })
+    check(res, {
+        'response job should same with requests': (res) => {
+            const response = JSON.parse(res.body);
+            return response.job == 'leader'
+        },
+    });
+});
     sleep(1);
     
-    url = 'https://reqres.in/api/users/2';
-    payload = JSON.stringify({
+    group('update with valid request should success', function () {
+    const url = 'https://reqres.in/api/users/2';
+    const payload = JSON.stringify({
         name: 'morpheus',
         job: 'zion resident'
     });
-    res = http.put(url, payload, params);
+    const params = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+    let res = http.put(url, payload, params);
     check(res, {
-        'API update is successful': (r) => r.status === 200,
+        'response code was 200': (res) => res.status == 200,
     });
+    check(res, {
+        'response name should same with requests': (res) => {
+            const response = JSON.parse(res.body);
+            return response.name == 'morpheus'
+        },
+    })
+    check(res, {
+        'response job should same with requests': (res) => {
+            const response = JSON.parse(res.body);
+            return response.job == 'zion resident'
+        },
+    });
+});
     sleep(1);
 }
